@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Minas en San Juan - Argentina</title>
+  <meta charset="utf-8" />
+  <style>
+    #map {
+      height: 90vh;
+      width: 100%;
+    }
+    #filter {
+      margin: 10px;
+      font-family: Arial, sans-serif;
+    }
+    a.enlace-mina {
+      display: inline-block;
+      margin-top: 5px;
+      padding: 5px 10px;
+      background-color: #007bff;
+      color: white;
+      text-decoration: none;
+      border-radius: 4px;
+    }
+    a.enlace-mina:hover {
+      background-color: #0056b3;
+    }
+  </style>
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+</head>
+<body>
+  <h1>Principales Minas en San Juan</h1>
+  <div id="filter">
+    Filtrar por mineral: 
+    <select id="mineralFilter" onchange="mostrarMarcadores(this.value)">
+      <option value="Todos">Todos</option>
+      <option value="Cobre">Cobre</option>
+      <option value="Oro">Oro</option>
+      <option value="Plata">Plata</option>
+    </select>
+  </div>
+  <div id="map"></div>
+
+  <script>
+    let map = L.map("map").setView([-30.5, -69.2], 7);
+
+    // Cargar mapa base desde OpenStreetMap
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    const markers = [];
+
+    // Minas principales en San Juan con info detallada
+    const minas = [
+      { 
+        nombre: "Minera Veladero", 
+        provincia: "San Juan", 
+        departamento: "Iglesia", 
+        mineral: "Oro", 
+        empresa: "Barrick Gold / Shandong Gold",
+        estado: "En producción", 
+        altitud: "4.000 msnm",
+        inversion: "U$S 5.000 millones",
+        lat: -29.598, 
+        lng: -69.166,
+        link: "https://web.sanjuan.gob.ar/ipeem/?page_id=217"
+      },
+      { 
+        nombre: "Minera Pascua-Lama", 
+        provincia: "San Juan", 
+        departamento: "Iglesia", 
+        mineral: "Oro, Plata", 
+        empresa: "Barrick Gold",
+        estado: "Suspendido", 
+        altitud: "4.500 msnm",
+        inversion: "U$S 8.500 millones (estimado)",
+        lat: -29.591, 
+        lng: -69.216,
+        link: "https://center-hre.org/wp-content/uploads/2011/09/ficha-tecnica-Pascua-Lama.pdf"
+      },
+      { 
+        nombre: "Proyecto El Pachón", 
+        provincia: "San Juan", 
+        departamento: "Calingasta", 
+        mineral: "Cobre", 
+        empresa: "Glencore Xstrata",
+        estado: "Exploración avanzada", 
+        altitud: "3.600 msnm",
+        inversion: "U$S 4.500 millones (estimado)",
+        lat: -30.500, 
+        lng: -69.000,
+        link: "https://www.elpachon.com.ar/usos-del-cobre"
+      },
+      { 
+        nombre: "Proyecto Mina Josemaría", 
+        provincia: "San Juan", 
+        departamento: "Iglesia", 
+        mineral: "Cobre, Oro, Plata", 
+        empresa: "Desconocida",
+        estado: "Exploración / Desarrollo avanzado", 
+        altitud: "4.230 msnm",
+        inversion: "Desconocida",
+        lat: -29.25, 
+        lng: -69.73,
+        link: "https://josemaria.ar/el-proyecto/"
+      }
+    ];
+
+    function mostrarMarcadores(filtro) {
+      // Eliminar marcadores anteriores
+      markers.forEach(m => map.removeLayer(m));
+      markers.length = 0;
+
+      minas.forEach(mina => {
+        if (filtro === "Todos" || mina.mineral.includes(filtro)) {
+          const marker = L.marker([mina.lat, mina.lng]).addTo(map);
+          let popupContent = `
+            <h3>${mina.nombre}</h3>
+            <p><b>Provincia:</b> ${mina.provincia}</p>
+            <p><b>Departamento:</b> ${mina.departamento}</p>
+            <p><b>Mineral principal:</b> ${mina.mineral}</p>
+            <p><b>Empresa operadora:</b> ${mina.empresa}</p>
+            <p><b>Estado:</b> ${mina.estado}</p>
+            <p><b>Altitud:</b> ${mina.altitud}</p>
+            <p><b>Inversión estimada:</b> ${mina.inversion}</p>
+          `;
+          if (mina.link) {
+            popupContent += `
+              <a href="${mina.link}" target="_blank" class="enlace-mina">Más información</a>
+            `;
+          }
+          marker.bindPopup(popupContent);
+          markers.push(marker);
+        }
+      });
+    }
+
+    // Mostrar todos al inicio
+    mostrarMarcadores("Todos");
+  </script>
+</body>
+</html>
