@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Minas en Argentina</title>
+  <meta charset="utf-8">
+  <style>
+    #map {
+      height: 90vh;
+      width: 100%;
+    }
+    #filter {
+      margin: 10px;
+    }
+  </style>
+  <script src="https://maps.googleapis.com/maps/api/js?key=TU_API_KEY"></script>
+  <script>
+    let map;
+    const markers = [];
+
+    const minas = [
+      { nombre: "Salar del Hombre Muerto", provincia: "Catamarca/Salta", mineral: "Litio, Potasio", lat: -24.208, lng: -67.267 },
+      { nombre: "Salar de Olaroz", provincia: "Jujuy", mineral: "Litio", lat: -22.933, lng: -66.817 },
+      { nombre: "Salar de Cauchari-Olaroz", provincia: "Jujuy/Salta", mineral: "Litio", lat: -23.054, lng: -66.686 },
+      { nombre: "Salar de Arizaro", provincia: "Salta", mineral: "Litio", lat: -24.500, lng: -67.500 },
+      { nombre: "Salar de Pastos Grandes", provincia: "Salta/Catamarca", mineral: "Litio", lat: -24.500, lng: -67.800 },
+      { nombre: "Salar del Rincón", provincia: "Salta", mineral: "Litio", lat: -22.000, lng: -66.500 },
+      { nombre: "Minera Bajo de la Alumbrera", provincia: "Catamarca", mineral: "Cobre, Oro", lat: -27.292, lng: -66.890 },
+      { nombre: "Minera Veladero", provincia: "San Juan", mineral: "Oro", lat: -29.598, lng: -69.166 },
+      { nombre: "Minera Pascua-Lama", provincia: "San Juan", mineral: "Oro, Plata", lat: -29.591, lng: -69.216 },
+      { nombre: "Minera Cerro Negro", provincia: "Santa Cruz", mineral: "Oro, Plata", lat: -27.789, lng: -69.890 },
+      { nombre: "Minera San José", provincia: "Chubut", mineral: "Plata, Oro", lat: -43.000, lng: -71.000 },
+      { nombre: "Minera El Pachón", provincia: "San Juan", mineral: "Cobre", lat: -30.500, lng: -69.000 },
+      { nombre: "Minera Cerro Vanguardia", provincia: "Santa Cruz", mineral: "Oro", lat: -46.500, lng: -69.500 },
+      { nombre: "Minera Capillitas", provincia: "Catamarca", mineral: "Cobre, Plata", lat: -27.850, lng: -66.333 }
+    ];
+
+    function initMap() {
+      map = new google.maps.Map(document.getElementById("map"), {
+        center: { lat: -32.0, lng: -64.0 },
+        zoom: 4
+      });
+
+      mostrarMarcadores("Todos");
+    }
+
+    function mostrarMarcadores(filtro) {
+      // Limpiar marcadores existentes
+      markers.forEach(marker => marker.setMap(null));
+      markers.length = 0;
+
+      minas.forEach(mina => {
+        if (filtro === "Todos" || mina.mineral.includes(filtro)) {
+          const marker = new google.maps.Marker({
+            position: { lat: mina.lat, lng: mina.lng },
+            map: map,
+            title: mina.nombre
+          });
+
+          const infoWindow = new google.maps.InfoWindow({
+            content: `<h3>${mina.nombre}</h3>
+                      <p>Provincia: ${mina.provincia}</p>
+                      <p>Mineral: ${mina.mineral}</p>`
+          });
+
+          marker.addListener("click", () => {
+            infoWindow.open(map, marker);
+          });
+
+          markers.push(marker);
+        }
+      });
+    }
+  </script>
+</head>
+<body onload="initMap()">
+  <h1>Principales Minas en Argentina</h1>
+  <div id="filter">
+    Filtrar por mineral: 
+    <select onchange="mostrarMarcadores(this.value)">
+      <option value="Todos">Todos</option>
+      <option value="Litio">Litio</option>
+      <option value="Cobre">Cobre</option>
+      <option value="Oro">Oro</option>
+      <option value="Plata">Plata</option>
+      <option value="Potasio">Potasio</option>
+    </select>
+  </div>
+  <div id="map"></div>
+</body>
+</html>
